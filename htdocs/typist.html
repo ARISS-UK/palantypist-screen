@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <style>
+      html {
+        color: white;
+        background-color: black;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 5rem;
+      }
+      #main {
+        padding: 0.3em;
+        position:absolute;
+        top:0px;
+        right:0px;
+        bottom:0px;
+        left:0px;
+      }
+      footer {
+        position: fixed; 
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 1.1rem;
+        font-size: 0.3rem;
+      }
+      footer > p {
+        text-align: center;
+      }
+    </style>
+    <script src="/lib/jquery-3.6.0.min.js"></script>
+    <script src="/lib/socket.io-4.2.0.min.js"></script>
+    <script>
+      let socket = io();
+
+      let doc_main  = null;
+
+      document.addEventListener("DOMContentLoaded", function()
+      {
+        doc_main = document.getElementById('main');
+
+        doc_main.contentEditable = true;
+        doc_main.focus();
+      });
+
+      document.onkeydown = function(e)
+      {
+        const evtobj = window.event? event : e;
+
+        /* Ctrl+Enter or Shift+Enter -> Clear page */
+        if (evtobj.keyCode == 13 && (evtobj.ctrlKey || evtobj.shiftKey))
+        {
+          doc_main.innerHTML = "";
+          socket.emit('p', "");
+        }
+      }
+
+      document.onkeyup = function(e)
+      {
+        const evtobj = window.event? event : e;
+
+        /* Space, punctuation, or enter -> Update remote screen */
+        if (evtobj.keyCode == 32 // Space
+          || evtobj.keyCode == 49 // exclamation mark
+          || evtobj.keyCode == 188 // comma
+          || evtobj.keyCode == 190 // period
+          || evtobj.keyCode == 191 // question mark
+          || evtobj.keyCode == 13 // Enter
+        )
+        {
+          socket.emit('p', doc_main.innerHTML);
+        }
+
+        /* Catch weirdness on keyup (observed on shift+enter in FF) */
+        if (evtobj.keyCode == 13 && (evtobj.ctrlKey || evtobj.shiftKey))
+        {
+          doc_main.innerHTML = "";
+          socket.emit('p', "");
+        }
+      }
+
+      socket.on('p', function(msg)
+      {
+        doc_main.innerHTML = msg;
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+    </script>
+  </head>
+  <body tabindex="0">
+    <div id="main"></div>
+    <footer>
+      <p>
+        To Clear Screen: Ctrl+Enter or Shift+Enter<br>
+        Remote Screen will update after space, punctuation, or new line.
+      </p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,4 @@
+{
+  "http_port": 8001,
+  "http_serve_htdocs": true
+}

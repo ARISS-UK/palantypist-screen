@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <style>
+      html {
+        color: white;
+        background-color: black;
+        padding: 0.2em;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 5rem;
+        /* Hide Text input cursor */
+        caret-color: transparent;
+      }
+    </style>
+    <script src="/lib/jquery-3.6.0.min.js"></script>
+    <script src="/lib/socket.io-4.2.0.min.js"></script>
+    <script>
+      let socket = io();
+
+      socket.on('p', function(msg)
+      {
+        //console.log(msg);
+        document.body.innerHTML = msg;
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
